@@ -7,13 +7,13 @@ from pybaseball import playerid_reverse_lookup, statcast
 from sqlalchemy import create_engine
 
 # --- 1. EXTRACT ---
-print("Extracting data from Statcast...")
+print("--- Extracting data from Statcast ---")
 start_dt = (datetime.now() - timedelta(days=14)).strftime('%Y-%m-%d')
 end_dt = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 df = statcast(start_dt=start_dt, end_dt=end_dt)
 
 # --- 2. TRANSFORM ---
-print("Transforming data...")
+print("--- Transforming data ---")
 
 # Remove rows where 'events' is null (these are pitches that didn't end a Plate Appearance)
 df = df.dropna(subset=['events'])
