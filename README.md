@@ -18,11 +18,13 @@ An automated data pipeline that extracts Major League Baseball (MLB) player stat
 
 The pipeline calculates metrics based on the following logic:
 
-- **At-Bats (AB)**: Calculated by subtracting walks, hit-by-pitches, sacrifice flies/bunts, and catcher interference from total Plate Appearances.
+- **At-Bats (AB)**: Calculated by subtracting walks, hit-by-pitches, sacrifice flies/hits, and catcher interference from total Plate Appearances.
 
 - $\Large \text{AVG} = \frac{Hits}{At Bats}$
 
 - $\Large \text{OBP} = \frac{Hits + Walks + Hit By Pitch}{At Bats + Walks + Hit By Pitch + Sacrifice Flies}$
+
+- $\Large \text{OBP (alt)} = \frac{Hits + Walks + Hit By Pitch}{PA - Sacrifice Hits - Catcher Interference}$
 
 ## 🛠️ Tech Stack
 
