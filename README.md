@@ -116,7 +116,7 @@ Gathering player lookup table. This may take a moment.
 | AZ   | 543510     | field_out |
 | AZ   | 571448     | strikeout |
 
-### After adding flags
+### After adding flags (plate appearance level)
 
 | team | batter     | events    | is_hit | is_ab_exclude | is_on_base | is_obp_ignore | is_bb |
 |------|------------|-----------|--------|---------------|------------|---------------|-------|
@@ -129,7 +129,7 @@ Gathering player lookup table. This may take a moment.
 | AZ   | 543510     | field_out | False  | False         | False      | False         | False |
 | AZ   | 571448     | strikeout | False  | False         | False      | False         | False |
 
-### After aggregation and calculation of avg and obp
+### After aggregation and calculation of avg and obp (batter level)
 
 | team | batter     | pa | ab | h  | bb | is_ab_exclude | is_on_base | is_obp_ignore | avg   | obp   |
 |------|------------|----|----|----|----|---------------|------------|---------------|-------|-------|
