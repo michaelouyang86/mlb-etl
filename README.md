@@ -18,6 +18,8 @@ An automated data pipeline that extracts Major League Baseball (MLB) player stat
 
 The pipeline calculates metrics based on the following logic:
 
+- **Plate Appearances (PA)**: Total number of times a player has stepped to the plate.
+
 - **At-Bats (AB)**: Calculated by subtracting walks, hit-by-pitches, sacrifice flies/hits, and catcher interference from total Plate Appearances.
 
 - $\Large \text{AVG} = \frac{Hits}{At Bats}$
