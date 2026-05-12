@@ -20,13 +20,13 @@ The pipeline calculates metrics based on the following logic:
 
 - **Plate Appearances (PA)**: Total number of times a player has stepped to the plate.
 
-- **At-Bats (AB)**: Calculated by subtracting walks, hit-by-pitches, sacrifice flies/hits, and catcher interference from total Plate Appearances.
+- **At-Bats (AB)**: Calculated by subtracting walks, hit-by-pitches, sacrifice flies/bunts, and catcher interference from total Plate Appearances.
 
 - $\Large \text{AVG} = \frac{Hits}{At Bats}$
 
 - $\Large \text{OBP} = \frac{Hits + Walks + Hit By Pitch}{At Bats + Walks + Hit By Pitch + Sacrifice Flies}$
 
-- $\Large \text{OBP (alt)} = \frac{Hits + Walks + Hit By Pitch}{PA - Sacrifice Hits - Catcher Interference}$
+- $\Large \text{OBP (alt)} = \frac{Hits + Walks + Hit By Pitch}{PA - Sacrifice Bunts - Catcher Interference}$
 
 ## 🛠️ Tech Stack
 
