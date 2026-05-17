@@ -83,7 +83,7 @@ Gathering player lookup table. This may take a moment.
 | Column      | Type  | Description                      |
 |-------------|-------|----------------------------------|
 | team        | TEXT  | The MLB team abbreviation        |
-| batter      | INT   | MLBAM Player ID                  |
+| batter_id   | INT   | MLBAM Player ID                  |
 | batter_name | TEXT  | Full Name of the player          |
 | pa          | INT   | Plate Appearances                |
 | ab          | INT   | At-Bats                          |
@@ -109,7 +109,7 @@ Gathering player lookup table. This may take a moment.
 
 ### After cleaning and filtering (plate appearance level)
 
-| team | batter     | events    |
+| team | batter_id  | events    |
 |------|------------|-----------|
 | NYM  | 669004     | field_out |
 | NYM  | **683146** | walk      |
@@ -122,7 +122,7 @@ Gathering player lookup table. This may take a moment.
 
 ### After adding flags (plate appearance level)
 
-| team | batter     | events    | is_hit | is_ab_exclude | is_on_base | is_obp_ignore | is_bb |
+| team | batter_id  | events    | is_hit | is_ab_exclude | is_on_base | is_obp_ignore | is_bb |
 |------|------------|-----------|--------|---------------|------------|---------------|-------|
 | NYM  | 669004     | field_out | False  | False         | False      | False         | False |
 | NYM  | **683146** | walk      | False  | True          | True       | False         | True  |
@@ -135,7 +135,7 @@ Gathering player lookup table. This may take a moment.
 
 ### After aggregation and calculation of avg and obp (batter level)
 
-| team | batter     | pa | ab | h  | bb | is_ab_exclude | is_on_base | is_obp_ignore | avg   | obp   |
+| team | batter_id  | pa | ab | h  | bb | is_ab_exclude | is_on_base | is_obp_ignore | avg   | obp   |
 |------|------------|----|----|----|----|---------------|------------|---------------|-------|-------|
 | NYM  | 669004     | 31 | 26 | 7  |  3 | 5             | 11         | 1             | 0.269 | 0.367 |
 | NYM  | **683146** | 38 | 29 | 5  |  7 | 9             | 13         | 1             | 0.172 | 0.351 |
@@ -161,7 +161,7 @@ Gathering player lookup table. This may take a moment.
 
 ### Merge batter_name column back to main table and filter for needed columns (sorted by team ASC and obp DESC)
 
-| team | batter     | batter_name   | pa | ab | h  | bb | avg   | obp   |
+| team | batter_id  | batter_name   | pa | ab | h  | bb | avg   | obp   |
 |------|------------|---------------|----|----|----|----|-------|-------|
 | AZ   | 571448     | Nolan Arenado | 40 | 33 | 7  | 6  | 0.212 | 0.350 |
 | AZ   | 678489     | Jorge Barrosa | 24 | 20 | 3  | 4  | 0.150 | 0.292 |
@@ -177,36 +177,36 @@ Gathering player lookup table. This may take a moment.
 #### For the sample players:
 
 ```sql
-mysql> select * from batter_stats where batter in ('683146', '668901');
-+------+--------+--------------+------+------+------+------+-------+-------+
-| team | batter | batter_name  | pa   | ab   | h    | bb   | avg   | obp   |
-+------+--------+--------------+------+------+------+------+-------+-------+
-| NYM  | 683146 | Brett Baty   |   38 |   29 |    5 |    7 | 0.172 | 0.351 |
-| NYM  | 668901 | Mark Vientos |   41 |   38 |    8 |    3 | 0.211 | 0.268 |
-+------+--------+--------------+------+------+------+------+-------+-------+
+mysql> select * from batter_stats where batter_id in ('683146', '668901');
++------+-----------+--------------+------+------+------+------+-------+-------+
+| team | batter_id | batter_name  | pa   | ab   | h    | bb   | avg   | obp   |
++------+-----------+--------------+------+------+------+------+-------+-------+
+| NYM  | 683146    | Brett Baty   |   38 |   29 |    5 |    7 | 0.172 | 0.351 |
+| NYM  | 668901    | Mark Vientos |   41 |   38 |    8 |    3 | 0.211 | 0.268 |
++------+-----------+--------------+------+------+------+------+-------+-------+
 ```
 
 #### For the Yankees:
 
 ```sql
 mysql> select * from batter_stats where team = 'NYY';
-+------+--------+------------------+------+------+------+------+-------+-------+
-| team | batter | batter_name      | pa   | ab   | h    | bb   | avg   | obp   |
-+------+--------+------------------+------+------+------+------+-------+-------+
-| NYY  | 592450 | Aaron Judge      |   54 |   43 |   15 |   10 | 0.349 | 0.481 |
-| NYY  | 641355 | Cody Bellinger   |   53 |   46 |   17 |    6 |  0.37 | 0.434 |
-| NYY  | 642708 | Amed Rosario     |   13 |   11 |    3 |    2 | 0.273 | 0.385 |
-| NYY  | 502671 | Paul Goldschmidt |   30 |   27 |    8 |    3 | 0.296 | 0.367 |
-| NYY  | 700250 | Ben Rice         |   34 |   31 |    9 |    3 |  0.29 | 0.353 |
-| NYY  | 641857 | Ryan Mcmahon     |   37 |   35 |   11 |    2 | 0.314 | 0.351 |
-| NYY  | 680474 | Max Schuemann    |    6 |    5 |    1 |    1 |   0.2 | 0.333 |
-| NYY  | 676609 | Jos Caballero    |   41 |   36 |    8 |    3 | 0.222 | 0.317 |
-| NYY  | 663757 | Trent Grisham    |   50 |   44 |    9 |    5 | 0.205 |  0.28 |
-| NYY  | 669224 | Austin Wells     |   33 |   29 |    5 |    4 | 0.172 | 0.273 |
-| NYY  | 641555 | J. C. Escarra    |   11 |   10 |    2 |    1 |   0.2 | 0.273 |
-| NYY  | 665862 | Jazz Chisholm    |   50 |   44 |    8 |    5 | 0.182 |  0.26 |
-| NYY  | 691176 | Jasson Domnguez  |   32 |   30 |    6 |    1 |   0.2 |  0.25 |
-| NYY  | 682987 | Spencer Jones    |    6 |    5 |    0 |    1 |     0 | 0.167 |
-+------+--------+------------------+------+------+------+------+-------+-------+
++------+-----------+------------------+------+------+------+------+-------+-------+
+| team | batter_id | batter_name      | pa   | ab   | h    | bb   | avg   | obp   |
++------+-----------+------------------+------+------+------+------+-------+-------+
+| NYY  | 592450    | Aaron Judge      |   54 |   43 |   15 |   10 | 0.349 | 0.481 |
+| NYY  | 641355    | Cody Bellinger   |   53 |   46 |   17 |    6 |  0.37 | 0.434 |
+| NYY  | 642708    | Amed Rosario     |   13 |   11 |    3 |    2 | 0.273 | 0.385 |
+| NYY  | 502671    | Paul Goldschmidt |   30 |   27 |    8 |    3 | 0.296 | 0.367 |
+| NYY  | 700250    | Ben Rice         |   34 |   31 |    9 |    3 |  0.29 | 0.353 |
+| NYY  | 641857    | Ryan Mcmahon     |   37 |   35 |   11 |    2 | 0.314 | 0.351 |
+| NYY  | 680474    | Max Schuemann    |    6 |    5 |    1 |    1 |   0.2 | 0.333 |
+| NYY  | 676609    | Jos Caballero    |   41 |   36 |    8 |    3 | 0.222 | 0.317 |
+| NYY  | 663757    | Trent Grisham    |   50 |   44 |    9 |    5 | 0.205 |  0.28 |
+| NYY  | 669224    | Austin Wells     |   33 |   29 |    5 |    4 | 0.172 | 0.273 |
+| NYY  | 641555    | J. C. Escarra    |   11 |   10 |    2 |    1 |   0.2 | 0.273 |
+| NYY  | 665862    | Jazz Chisholm    |   50 |   44 |    8 |    5 | 0.182 |  0.26 |
+| NYY  | 691176    | Jasson Domnguez  |   32 |   30 |    6 |    1 |   0.2 |  0.25 |
+| NYY  | 682987    | Spencer Jones    |    6 |    5 |    0 |    1 |     0 | 0.167 |
++------+-----------+------------------+------+------+------+------+-------+-------+
 ```
 

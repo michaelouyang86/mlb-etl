@@ -23,7 +23,7 @@ df = df.dropna(subset=['events'])
 df['team'] = np.where(df['inning_topbot'] == 'Top', df['away_team'], df['home_team'])
 
 # Filter for needed columns
-df = df[['team', 'batter', 'events']]
+df = df[['team', 'batter', 'events']].rename(columns={'batter': 'batter_id'})
 
 # Calculate Batting Average (AVG) and On-Base Percentage (OBP)
 # AVG = Hits / At-Bats
@@ -42,7 +42,7 @@ df['is_obp_ignore'] = df['events'].isin(ON_BASE_PERCENTAGE_IGNORE)
 df['is_bb'] = df['events'].isin(BB_EVENTS)
 
 # Aggregate statistics
-batter_stats_df = df.groupby(['batter', 'team'], as_index=False, sort=False).agg({
+batter_stats_df = df.groupby(['batter_id', 'team'], as_index=False, sort=False).agg({
     'events': 'count',       # Total Plate Appearances
     'is_hit': 'sum',         # Total Hits
     'is_ab_exclude': 'sum',  # Events to subtract to get At-Bats
@@ -66,20 +66,20 @@ batter_stats_df['obp'] = batter_stats_df['is_on_base'] / (batter_stats_df['pa'] 
 batter_stats_df[['avg', 'obp']] = batter_stats_df[['avg', 'obp']].round(3)
 
 # Filter for needed columns
-batter_stats_df = batter_stats_df[['team', 'batter', 'pa', 'ab', 'h', 'bb', 'avg', 'obp']]
+batter_stats_df = batter_stats_df[['team', 'batter_id', 'pa', 'ab', 'h', 'bb', 'avg', 'obp']]
 
 # Get Batter Names (statcast only provides IDs for batters)
-batters = batter_stats_df['batter'].unique()
-batter_info_df = playerid_reverse_lookup(batters, key_type='mlbam')
+batter_ids = batter_stats_df['batter_id'].unique()
+batter_info_df = playerid_reverse_lookup(batter_ids, key_type='mlbam')
 batter_info_df['batter_name'] = batter_info_df['name_first'] + ' ' + batter_info_df['name_last']
 batter_info_df['batter_name'] = batter_info_df['batter_name'].str.title()
 
 # Merge names into our main dataframe
 result_df = batter_stats_df.merge(batter_info_df[['key_mlbam', 'batter_name']], 
-                               left_on='batter', 
-                               right_on='key_mlbam', 
-                               how='left')
-result_df = result_df[['team', 'batter', 'batter_name', 'pa', 'ab', 'h', 'bb', 'avg', 'obp']]
+                                  left_on='batter_id', 
+                                  right_on='key_mlbam', 
+                                  how='left')
+result_df = result_df[['team', 'batter_id', 'batter_name', 'pa', 'ab', 'h', 'bb', 'avg', 'obp']]
 
 # Sort by team ascending, then OBP descending
 result_df = result_df.sort_values(
