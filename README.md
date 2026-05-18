@@ -172,6 +172,24 @@ Gathering player lookup table. This may take a moment.
 | NYM  | 543760     | Marcus Semien | 47 | 43 | 10 | 4  | 0.233 | 0.298 |
 | NYM  | **668901** | Mark Vientos  | 41 | 38 | 8  | 3  | 0.211 | 0.268 |
 
+### There are some new batters that don't have names in the playerid_reverse_lookup table
+
+| team | batter_id | batter_name | pa | ab | h | bb | avg   | obp   |
+|------|-----------|-------------|----|----|---|----|-------|-------|
+| SF   | 683679    | NaN         | 30 | 28 | 6 | 1  | 0.214 | 0.267 |
+| ATH  | 703607    | NaN         | 15 | 13 | 5 | 1  | 0.385 | 0.400 |
+| NYY  | 682987    | NaN         | 19 | 16 | 3 | 3  | 0.188 | 0.316 |
+
+### Get missing names from MLB API and map them back to the main table
+
+API: https://statsapi.mlb.com/api/v1/people/682987
+
+| team | batter_id | batter_name     | pa | ab | h | bb | avg   | obp   |
+|------|-----------|-----------------|----|----|---|----|-------|-------|
+| SF   | 683679    | Jesus Rodriguez | 30 | 28 | 6 | 1  | 0.214 | 0.267 |
+| ATH  | 703607    | Henry Bolte     | 15 | 13 | 5 | 1  | 0.385 | 0.400 |
+| NYY  | 682987    | Spencer Jones   | 19 | 16 | 3 | 3  | 0.188 | 0.316 |
+
 ### Load data into database
 
 #### For the sample players:

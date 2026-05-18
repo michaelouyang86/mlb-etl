@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import os
+import requests
 
 import numpy as np
 from dotenv import load_dotenv
@@ -22,7 +23,7 @@ df = df.dropna(subset=['events'])
 # 'Bot' of the inning = Home team is batting
 df['team'] = np.where(df['inning_topbot'] == 'Top', df['away_team'], df['home_team'])
 
-# Filter for needed columns
+# Filter for needed columns and rename batter to batter_id
 df = df[['team', 'batter', 'events']].rename(columns={'batter': 'batter_id'})
 
 # Calculate Batting Average (AVG) and On-Base Percentage (OBP)
@@ -81,6 +82,22 @@ result_df = batter_stats_df.merge(batter_info_df[['key_mlbam', 'batter_name']],
                                   how='left')
 result_df = result_df[['team', 'batter_id', 'batter_name', 'pa', 'ab', 'h', 'bb', 'avg', 'obp']]
 
+# There are some new batters that don't have names in the playerid_reverse_lookup table
+missing_name_batter_ids = result_df.loc[result_df['batter_name'].isna(), 'batter_id'].unique()
+# Create a map of batter_id to batter_name
+id_name_map = {}
+# Get missing names from MLB API
+for batter_id in missing_name_batter_ids:
+    try:
+        url = f"https://statsapi.mlb.com/api/v1/people/{batter_id}"
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        id_name_map[batter_id] = response.json()['people'][0]['fullName']
+    except Exception as e:
+        print(f"Failed to get info for missing_name_batter: {batter_id}, error: {e}")
+# Fill in missing names
+result_df['batter_name'] = result_df['batter_name'].fillna(result_df['batter_id'].map(id_name_map))
+
 # Sort by team ascending, then OBP descending
 result_df = result_df.sort_values(
     by=['team', 'obp'],
@@ -94,14 +111,14 @@ result_df = result_df.sort_values(
 # If you're in a production 'env', this line is safely ignored.
 load_dotenv()
 
-USER = os.getenv('DB_USER')
-PASSWORD = os.getenv('DB_PASSWORD')
-HOST = os.getenv('DB_HOST')
-PORT = os.getenv('DB_PORT')
-DATABASE = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
 
 # Create the MySQL Connection Engine
-connection_string = f"mysql+pymysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}"
+connection_string = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(connection_string)
 
 try:
